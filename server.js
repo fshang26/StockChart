@@ -10,7 +10,7 @@ var app = express();
 
 function compile(str, path) {
   return stylus(str).set('filename', path);
-};
+}
 
 //app.configure(function() {
   app.set('views', __dirname + '/server/views');
@@ -18,8 +18,8 @@ function compile(str, path) {
   app.use(morgan('dev'));
   app.use(bodyParser());
   app.use(stylus.middleware({
-    src: __dirname + '/pubic',
-    compile: compile
+      src: __dirname + '/public',
+      compile: compile
   }));
   app.use(express.static(__dirname + '/public'));
 //});
