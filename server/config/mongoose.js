@@ -15,7 +15,8 @@ module.exports = function(config) {
     lastName: String,
     emailID: String,
     salt: String,
-    hashed_pwd: String
+    hashed_pwd: String,
+    roles: [String]
   });
   userSchema.methods = {
     authenticate: function(passwordToMatch) {
@@ -25,15 +26,16 @@ module.exports = function(config) {
 
   var User = mongoose.model('User', userSchema);
 
+
   User.find({}).exec(function(err, collection) {
     if (collection.length === 0) {
       var salt, hash;
       salt = createSalt();
-      hash = hashPwd(salt, 'filter366');
-      User.create({firstName: 'Feng', lastName: 'Shang', emailID: 'feng.shang@outlook.com', salt: salt, hashed_pwd: hash});
+      hash = hashPwd(salt, 'filter366_1');
+      User.create({firstName: 'Feng', lastName: 'Shang', emailID: 'feng.shang@outlook.com', salt: salt, hashed_pwd: hash, roles: ['admin']});
       salt = createSalt();
       hash = hashPwd(salt, 'filter366');
-      User.create({firstName: 'Hong', lastName: 'Shang', emailID: 'bigapple26@outlook.com', salt: salt, hashed_pwd: hash});
+      User.create({firstName: 'Hong', lastName: 'Shang', emailID: 'bigapple26@outlook.com', salt: salt, hashed_pwd: hash, roles: []});
       salt = createSalt();
       hash = hashPwd(salt, 'filter366');
       User.create({firstName: 'Bing', lastName: 'Shang', emailID: 'fshang@msn.com', salt: salt, hashed_pwd: hash});
