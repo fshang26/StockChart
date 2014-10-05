@@ -1,0 +1,6 @@
+.panel.panel-primary
+  .panel-heading.text-center New Items
+  .panel-body
+    .row(ng-repeat="item in items | orderBy:'published':true | limitTo:10")
+      .col-md-3 {{item.published | date:'MMM d'}}
+      .col-md-9 {{item.name}}
