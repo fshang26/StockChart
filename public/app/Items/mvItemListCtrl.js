@@ -1,6 +1,5 @@
 angular.module('app').controller('mvItemListCtrl', function($scope, mvCachedItems) {
   $scope.items = mvCachedItems.query();
-
   $scope.sortOptions = [{
     value:"title",
     text: "Sort by Title"
