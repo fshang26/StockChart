@@ -26,18 +26,17 @@ module.exports = function(config) {
 
   var User = mongoose.model('User', userSchema);
 
-
   User.find({}).exec(function(err, collection) {
     if (collection.length === 0) {
       var salt, hash;
       salt = createSalt();
-      hash = hashPwd(salt, 'filter366_1');
+      hash = hashPwd(salt, 'abc123');
       User.create({firstName: 'Feng', lastName: 'Shang', emailID: 'feng.shang@outlook.com', salt: salt, hashed_pwd: hash, roles: ['admin']});
       salt = createSalt();
-      hash = hashPwd(salt, 'filter366');
+      hash = hashPwd(salt, 'abc123');
       User.create({firstName: 'Hong', lastName: 'Shang', emailID: 'bigapple26@outlook.com', salt: salt, hashed_pwd: hash, roles: []});
       salt = createSalt();
-      hash = hashPwd(salt, 'filter366');
+      hash = hashPwd(salt, 'abc123');
       User.create({firstName: 'Bing', lastName: 'Shang', emailID: 'fshang@msn.com', salt: salt, hashed_pwd: hash});
     }
   })
