@@ -3,4 +3,5 @@
   .panel-body
     .row(ng-repeat="item in items | orderBy:'published':true | limitTo:10")
       .col-md-3 {{item.published | date:'MMM d'}}
-      .col-md-9 {{item.name}}
+      .col-md-9
+        a(href="/items/{{item._id}}") {{item.title}}
