@@ -8,5 +8,5 @@ angular.module('app').factory('mvCachedItems', function(mvItem) {
       }
       return itemList;
     }
-  }
-})
+  };
+});
