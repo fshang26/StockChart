@@ -1,11 +1,11 @@
 {
-  "name": "SPABoilerplate",
+  "name": "StockChart",
   "version": "0.0.0",
-  "homepage": "https://github.com/fshang26/SPABoilerplate",
+  "homepage": "https://github.com/fshang26/StockChart",
   "authors": [
     "Feng Shang <feng.shang@outlook.com>"
   ],
-  "description": "Boilerplate for Single Page Web Application",
+  "description": "Stock Chart Web Application",
   "license": "MIT",
   "private": true,
   "dependencies": {
