@@ -32,6 +32,12 @@ angular.module('app').config(function($routeProvider, $locationProvider) {
   })
   .when('/items/:id', { templateUrl: '/partials/items/item-details',
       controller: 'mvItemDetailCtrl'
+  })
+  .when('/charts', { templateUrl: '/partials/charts/chart-list',
+      controller: 'mvChartListCtrl'
+  })
+  .when('/charts/:id', { templateUrl: '/partials/charts/chart-details',
+      controller: 'mvChartDetailCtrl',
   });
 
 });
