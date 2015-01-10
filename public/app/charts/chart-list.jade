@@ -1,5 +1,5 @@
 .container.chart-container
-  div.chart-content hello world
+  div.chart-content
     svg.ohclbars
       path.chart__pie(ng-repeat='arc in arcs' ng-attr-fill='{{arc.c}}' ng-attr-d='{{arc.d}}')
       path.ohcl(ng-attr-d='{{ohclPath()}}')
