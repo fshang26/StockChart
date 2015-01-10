@@ -12,10 +12,12 @@ block main-content
             a(href="/") Home
           li
             a(href="/items") Items
+          li
+            a(href="/charts") Charts
         div(ng-include="'/partials/account/navbar-login'")
 
   section.content
     div(ng-view)
 
-  footer.container.text-center
+  footer.container.text-center(ng-hide="true")
     p &copy; 2014 Stock Chart Inc.
