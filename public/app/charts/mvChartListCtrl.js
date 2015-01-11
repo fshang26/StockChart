@@ -1,7 +1,40 @@
 angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
+  $scope.xInterval = 10;
+  $scope.minY = Number.MAX_VALUE;
+  $scope.maxY = 0;
+  $scope.viewLen = 0;
+  $scope.defaultXOffset = 30
+
   $http.get('app/data/dji_d_2014-1896.json').success(function(data) {
-    $scope.djiData = data;
+    $scope.ohcls = data.slice(0, 2000);
+    $scope.containerHeight = angular.element('.ohclbars').height();
+    $scope.ohclsWidth = angular.element('.chart-container').width() - $scope.defaultXOffset;
+
+    viewLen = Math.ceil($scope.ohclsWidth/$scope.xInterval)
+    if (parseInt($scope.ohclsWidth, $scope.xInterval)) {
+      viewLen++;
+    }
+    for (var i = 0; i < viewLen; i++) {
+      if ($scope.ohcls[i][2] > $scope.maxY) {
+        $scope.maxY = $scope.ohcls[i][2];
+      }
+      if ($scope.ohcls[i][3] < $scope.minY) {
+        $scope.minY = $scope.ohcls[i][3];
+      }
+    }
+
+    var x = $scope.defaultXOffset;
+    for (var i = 0; i < $scope.ohcls.length; i++) {
+      var y1 = getY($scope.ohcls[i][2]),
+          y2 = getY($scope.ohcls[i][3]);
+      $scope.ohcls[i].d = "M" + x + ',' + y1 + " L" + x + ',' + y2 + ' Z';
+      x += $scope.xInterval;
+    }
   });
+
+  function getY(value) {
+    return $scope.containerHeight * (value - $scope.minY)/($scope.maxY - $scope.minY);
+  }
 
   var points = [
   {x: 20, y: 50},
@@ -12,7 +45,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
 
   $scope.points = points;
 
-  $scope.ohclPath = function(){
+  $scope.linePath = function(){
       var pathParts = [], currentPoint, i;
 
       for (i = 0; i < points.length; i++) {
