@@ -128,7 +128,7 @@ angular.module('app').directive("xscroll", function () {
     return function(scope, element, attrs) {
         angular.element('.chart-container').bind("scroll", function() {
           var index =  Math.ceil((angular.element('.ohclbars').width() - angular.element('.chart-container').width() - 30 - this.scrollLeft)/10);
-          if (index > 0) {
+          if (index >= 0) {
             var scope = angular.element(this).scope();
             scope.$apply(function() {
               scope.startXIndex = index;
