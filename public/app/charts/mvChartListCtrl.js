@@ -5,34 +5,60 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
   $scope.viewLen = 0;
   $scope.defaultXOffset = 30;
   $scope.startXIndex = 0;
+  $scope.ohcls = [];
 
-  $http.get('app/data/dji_d_2014-1896.json').success(function(data) {
-    $scope.ohcls = data;
-    $scope.containerHeight = angular.element('.ohclbars').height();
-    $scope.ohclsWidth = angular.element('.chart-container').width() - $scope.defaultXOffset;
-    var preVLen = $scope.ohclsWidth/$scope.xInterval;
-    $scope.viewLen = Math.ceil(preVLen)
-    if (preVLen === parseInt(preVLen, 10)) {
-      $scope.viewLen++;
-    }
-    for (var i = 0; i < $scope.viewLen; i++) {
-      if ($scope.ohcls[i][2] > $scope.maxY) {
-        $scope.maxY = $scope.ohcls[i][2];
-      }
-      if ($scope.ohcls[i][3] < $scope.minY) {
-        $scope.minY = $scope.ohcls[i][3];
-      }
-    }
 
-    var x = $scope.defaultXOffset;
-    for (var i = 0; i < $scope.viewLen; i++) {
-      var y1 = getY($scope.ohcls[i][2]),
-          y2 = getY($scope.ohcls[i][3]);
-      $scope.ohcls[i].d = "M" + x + ',' + y1 + " L" + x + ',' + y2;
-      x += $scope.xInterval;
-    }
+    var yql = 'http://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent(
+              'select * from xml where url="http://chartapi.finance.yahoo.com/instrument/1.0/%5Edji/chartdata;type=quote;range=1m"') +
+              '&format=json';
+  $http.get(yql).success(function(yahooData) {
+    var yd = [];
+    angular.forEach(yahooData.query.results['data-series'].series.p, function(d) {
+      if (d.ref.substr(0, 4) === '2015') {
+        var array = [],
+            date;
+        date = parseFloat(d.ref.substr(4, 2)) + '/' + parseFloat(d.ref.substr(6, 2)) + '/' + d.ref.substr(0, 4);
+        array.push(date);
+        array.push(Math.round(parseFloat(d.v[3])*100)/100);
+        array.push(Math.round(parseFloat(d.v[1])*100)/100);
+        array.push(Math.round(parseFloat(d.v[2])*100)/100);
+        array.push(Math.round(parseFloat(d.v[0])*100)/100);
+        array.push(parseFloat(d.v[4])); 
+        yd.push(array);
+      }
+    });
+
+    $http.get('app/data/dji_d_2014-1896.json').success(function(data) {
+      angular.forEach(yd, function(d) {
+        data.unshift(d);
+      });
+      $scope.ohcls = data;
+      $scope.containerHeight = angular.element('.ohclbars').height();
+      $scope.ohclsWidth = angular.element('.chart-container').width() - $scope.defaultXOffset;
+      var preVLen = $scope.ohclsWidth/$scope.xInterval;
+      $scope.viewLen = Math.ceil(preVLen)
+      if (preVLen === parseInt(preVLen, 10)) {
+        $scope.viewLen++;
+      }
+      for (var i = 0; i < $scope.viewLen; i++) {
+        if ($scope.ohcls[i][2] > $scope.maxY) {
+          $scope.maxY = $scope.ohcls[i][2];
+        }
+        if ($scope.ohcls[i][3] < $scope.minY) {
+          $scope.minY = $scope.ohcls[i][3];
+        }
+      }
+
+      var x = $scope.defaultXOffset;
+      for (var i = 0; i < $scope.viewLen; i++) {
+        var y1 = getY($scope.ohcls[i][2]),
+            y2 = getY($scope.ohcls[i][3]);
+        $scope.ohcls[i].d = "M" + x + ',' + y1 + " L" + x + ',' + y2;
+        x += $scope.xInterval;
+      }
+    });
   });
-
+    
   function getY(value) {
     return $scope.containerHeight * (value - $scope.minY)/($scope.maxY - $scope.minY);
   }
