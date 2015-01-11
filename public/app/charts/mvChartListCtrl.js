@@ -51,9 +51,13 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
 
       var x = $scope.defaultXOffset;
       for (var i = 0; i < $scope.viewLen; i++) {
-        var y1 = getY($scope.ohcls[i][2]),
-            y2 = getY($scope.ohcls[i][3]);
-        $scope.ohcls[i].d = "M" + x + ',' + y1 + " L" + x + ',' + y2;
+        var h = getY($scope.ohcls[i][2]),
+            l = getY($scope.ohcls[i][3]),
+            o = getY($scope.ohcls[i][1]),
+            c = getY($scope.ohcls[i][4]);
+        $scope.ohcls[i].d = 'M' + x + ',' + h + ' L' + x + ',' + l + 
+                            ' M' + x + ',' + o + ' L' + (x + 4) + ',' + o +
+                            ' M' + (x - 4) + ',' + c + ' L' + x + ',' + c;
         x += $scope.xInterval;
       }
     });
@@ -77,10 +81,14 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
 
     var x = $scope.defaultXOffset + $scope.startXIndex * $scope.xInterval;
     for (var i = 0; i < $scope.viewLen; i++) {
-      var y1 = getY($scope.ohcls[i + $scope.startXIndex][2]),
-          y2 = getY($scope.ohcls[i + $scope.startXIndex][3]);
-      $scope.ohcls[i + $scope.startXIndex].d = "M" + x + ',' + y1 + " L" + x + ',' + y2;
-      x += $scope.xInterval;
+        var h = getY($scope.ohcls[i + $scope.startXIndex][2]),
+            l = getY($scope.ohcls[i + $scope.startXIndex][3]),
+            o = getY($scope.ohcls[i + $scope.startXIndex][1]),
+            c = getY($scope.ohcls[i + $scope.startXIndex][4]);
+        $scope.ohcls[i + $scope.startXIndex].d = 'M' + x + ',' + h + ' L' + x + ',' + l + 
+                                                 ' M' + x + ',' + o + ' L' + (x + 4) + ',' + o +
+                                                 ' M' + (x - 4) + ',' + c + ' L' + x + ',' + c;
+        x += $scope.xInterval;
     }
   });
 
