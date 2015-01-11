@@ -3,18 +3,19 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
   $scope.minY = Number.MAX_VALUE;
   $scope.maxY = 0;
   $scope.viewLen = 0;
-  $scope.defaultXOffset = 30
+  $scope.defaultXOffset = 30;
+  $scope.startXIndex = 0;
 
   $http.get('app/data/dji_d_2014-1896.json').success(function(data) {
-    $scope.ohcls = data.slice(0, 2000);
+    $scope.ohcls = data;
     $scope.containerHeight = angular.element('.ohclbars').height();
     $scope.ohclsWidth = angular.element('.chart-container').width() - $scope.defaultXOffset;
-
-    viewLen = Math.ceil($scope.ohclsWidth/$scope.xInterval)
-    if (parseInt($scope.ohclsWidth, $scope.xInterval)) {
-      viewLen++;
+    var preVLen = $scope.ohclsWidth/$scope.xInterval;
+    $scope.viewLen = Math.ceil(preVLen)
+    if (preVLen === parseInt(preVLen, 10)) {
+      $scope.viewLen++;
     }
-    for (var i = 0; i < viewLen; i++) {
+    for (var i = 0; i < $scope.viewLen; i++) {
       if ($scope.ohcls[i][2] > $scope.maxY) {
         $scope.maxY = $scope.ohcls[i][2];
       }
@@ -24,10 +25,10 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
     }
 
     var x = $scope.defaultXOffset;
-    for (var i = 0; i < $scope.ohcls.length; i++) {
+    for (var i = 0; i < $scope.viewLen; i++) {
       var y1 = getY($scope.ohcls[i][2]),
           y2 = getY($scope.ohcls[i][3]);
-      $scope.ohcls[i].d = "M" + x + ',' + y1 + " L" + x + ',' + y2 + ' Z';
+      $scope.ohcls[i].d = "M" + x + ',' + y1 + " L" + x + ',' + y2;
       x += $scope.xInterval;
     }
   });
@@ -36,25 +37,26 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
     return $scope.containerHeight * (value - $scope.minY)/($scope.maxY - $scope.minY);
   }
 
-  var points = [
-  {x: 20, y: 50},
-  {x: 100, y: 80},
-  {x: 200, y: 40},
-  {x: 280, y: 30}
-  ];
-
-  $scope.points = points;
-
-  $scope.linePath = function(){
-      var pathParts = [], currentPoint, i;
-
-      for (i = 0; i < points.length; i++) {
-          currentPoint = points[i];
-          pathParts.push(currentPoint.x + "," + currentPoint.y);
+  $scope.$watch('startXIndex', function() {
+    $scope.minY = Number.MAX_VALUE;
+    $scope.maxY = 0;
+    for (var i = 0; i < $scope.viewLen; i++) {
+      if ($scope.ohcls[i + $scope.startXIndex][2] > $scope.maxY) {
+        $scope.maxY = $scope.ohcls[i + $scope.startXIndex][2];
       }
+      if ($scope.ohcls[i + $scope.startXIndex][3] < $scope.minY) {
+        $scope.minY = $scope.ohcls[i + $scope.startXIndex][3];
+      }
+    }
 
-      return "M" + pathParts.join(" L");
-  };
+    var x = $scope.defaultXOffset + $scope.startXIndex * $scope.xInterval;
+    for (var i = 0; i < $scope.viewLen; i++) {
+      var y1 = getY($scope.ohcls[i + $scope.startXIndex][2]),
+          y2 = getY($scope.ohcls[i + $scope.startXIndex][3]);
+      $scope.ohcls[i + $scope.startXIndex].d = "M" + x + ',' + y1 + " L" + x + ',' + y2;
+      x += $scope.xInterval;
+    }
+  });
 
         var pieData = [113,100,50,28,27];
         var sectorAngleArr = [];
@@ -86,4 +88,24 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
                        c: colors[i]}); //1 means clockwise
         }
         $scope.arcs = arcs;     
+});
+
+angular.module('app').directive("xscroll", function () {
+    return function(scope, element, attrs) {
+        angular.element('.chart-container').bind("scroll", function() {
+          var index =  Math.ceil((angular.element('.ohclbars').width() - angular.element('.chart-container').width() - 30 - this.scrollLeft)/10);
+          if (index > 0) {
+            var scope = angular.element(this).scope();
+            scope.$apply(function() {
+              scope.startXIndex = index;
+            });
+          }
+        });
+    };
+});
+
+angular.module('app').filter('viewfilter', function() {
+  return function(arr, start, end) {
+    return (arr || []).slice(start, start + end);
+  };
 });
