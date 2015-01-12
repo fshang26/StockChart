@@ -9,9 +9,9 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
   $scope.xruler = [];
 
 
-    var yql = 'http://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent(
-              'select * from xml where url="http://chartapi.finance.yahoo.com/instrument/1.0/%5Edji/chartdata;type=quote;range=1m"') +
-              '&format=json';
+  var yql = 'http://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent(
+            'select * from xml where url="http://chartapi.finance.yahoo.com/instrument/1.0/%5Edji/chartdata;type=quote;range=1m"') +
+            '&format=json';
   $http.get(yql).success(function(yahooData) {
     var yd = [];
     angular.forEach(yahooData.query.results['data-series'].series.p, function(d) {
@@ -41,26 +41,8 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
       if (preVLen === parseInt(preVLen, 10)) {
         $scope.viewLen++;
       }
-      for (var i = 0; i < $scope.viewLen; i++) {
-        if ($scope.ohcls[i][2] > $scope.maxY) {
-          $scope.maxY = $scope.ohcls[i][2];
-        }
-        if ($scope.ohcls[i][3] < $scope.minY) {
-          $scope.minY = $scope.ohcls[i][3];
-        }
-      }
 
-      var x = $scope.defaultXOffset;
-      for (var i = 0; i < $scope.viewLen; i++) {
-        var h = getY($scope.ohcls[i][2]),
-            l = getY($scope.ohcls[i][3]),
-            o = getY($scope.ohcls[i][1]),
-            c = getY($scope.ohcls[i][4]);
-        $scope.ohcls[i].d = 'M' + x + ',' + h + ' L' + x + ',' + l + 
-                            ' M' + x + ',' + o + ' L' + (x + 4) + ',' + o +
-                            ' M' + (x - 4) + ',' + c + ' L' + x + ',' + c;
-        x += $scope.xInterval;
-      }
+      drawOHLCBars();
     });
   });
     
@@ -71,6 +53,10 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
   $scope.$watch('startXIndex', function() {
     $scope.minY = Number.MAX_VALUE;
     $scope.maxY = 0;
+    drawOHLCBars();
+  });
+
+  function drawOHLCBars() {
     for (var i = 0; i < $scope.viewLen; i++) {
       if ($scope.ohcls[i + $scope.startXIndex][2] > $scope.maxY) {
         $scope.maxY = $scope.ohcls[i + $scope.startXIndex][2];
@@ -91,7 +77,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
                                                  ' M' + (x - 4) + ',' + c + ' L' + x + ',' + c;
         x += $scope.xInterval;
     }
-  });
+  }
 
   // Y-axis
   $scope.$watch('maxY', function() {
@@ -107,7 +93,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
         $scope.xruler.push(($scope.maxY - i * interval).toFixed(2));
     }
   }
-
+        // draw Pie chart
         var pieData = [113,100,50,28,27];
         var sectorAngleArr = [];
         var arcs = [];
