@@ -6,3 +6,5 @@ DJI historical data source:
 6 ways to download free intraday and tick data for the U.S. stock marke(http://www.quantshare.com/sa-426-6-ways-to-download-free-intraday-and-tick-data-for-the-us-stock-market)
 
 SVG css coordinate system setup (http://css-tricks.com/svg-animation-on-css-transforms/)
+
+http://monospaced.github.io/angular-mousewheel/

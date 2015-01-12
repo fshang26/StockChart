@@ -93,6 +93,11 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
         $scope.xruler.push(($scope.maxY - i * interval).toFixed(2));
     }
   }
+
+  $scope.xZoom = function(event, delta, deltaX, deltaY){
+    console.log("hello scroll");
+  };
+
         // draw Pie chart
         var pieData = [113,100,50,28,27];
         var sectorAngleArr = [];

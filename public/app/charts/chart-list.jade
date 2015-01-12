@@ -1,10 +1,10 @@
 .container.chart-container
-  div.chart-content(xscroll)
+  div.chart-content(xscroll msd-wheel='xZoom($event, $delta, $deltaX, $deltaY)')
     svg.ohclbars
       path.chart__pie(ng-repeat='arc in arcs' ng-attr-fill='{{arc.c}}' ng-attr-d='{{arc.d}}')
       circle(r='5' ng-repeat='p in points' ng-attr-cx='{{p.x}}' ng-attr-cy='{{p.y}}')
       path.ohcl(ng-repeat='ohcl in ohcls | viewfilter:startXIndex:viewLen' ng-attr-d='{{ohcl.d}}')
 div.yruler
       ul
-        li(ng-repeat="xr in xruler")
+        li(ng-repeat='xr in xruler')
           div {{xr}}
