@@ -8,3 +8,6 @@ DJI historical data source:
 SVG css coordinate system setup (http://css-tricks.com/svg-animation-on-css-transforms/)
 
 http://monospaced.github.io/angular-mousewheel/
+
+TODO
+1. move http.get to a resource service - see angular-phonecat tutorial
