@@ -6,6 +6,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
   $scope.defaultXOffset = 30;
   $scope.startXIndex = 0;
   $scope.ohcls = [];
+  $scope.xruler = [];
 
 
     var yql = 'http://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent(
@@ -91,6 +92,21 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
         x += $scope.xInterval;
     }
   });
+
+  // Y-axis
+  $scope.$watch('maxY', function() {
+    updateYRuler();
+  });
+  $scope.$watch('minY', function() {
+    updateYRuler();
+  });
+  function updateYRuler() {
+    $scope.xruler = [];
+    var interval = ($scope.maxY - $scope.minY) / 10;
+    for (var i = 0; i < 10; i++) {
+        $scope.xruler.push(($scope.maxY - i * interval).toFixed(2));
+    }
+  }
 
         var pieData = [113,100,50,28,27];
         var sectorAngleArr = [];
