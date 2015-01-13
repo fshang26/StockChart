@@ -1,5 +1,4 @@
-angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
-  $scope.xInterval = 10;
+angular.module('app').controller('mvChartListCtrl', function($scope, $http, $timeout) {
   $scope.minY = Number.MAX_VALUE;
   $scope.maxY = 0;
   $scope.viewLen = 0;
@@ -8,10 +7,12 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
   $scope.ohcls = [];
   $scope.xruler = [];
 
-
+  setXZoom(3);
+  var isZooming = false;
   var yql = 'http://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent(
             'select * from xml where url="http://chartapi.finance.yahoo.com/instrument/1.0/%5Edji/chartdata;type=quote;range=1m"') +
             '&format=json';
+
   $http.get(yql).success(function(yahooData) {
     var yd = [];
     angular.forEach(yahooData.query.results['data-series'].series.p, function(d) {
@@ -36,11 +37,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
       $scope.ohcls = data;
       $scope.containerHeight = angular.element('.ohclbars').height();
       $scope.ohclsWidth = angular.element('.chart-container').width() - $scope.defaultXOffset;
-      var preVLen = $scope.ohclsWidth/$scope.xInterval;
-      $scope.viewLen = Math.ceil(preVLen)
-      if (preVLen === parseInt(preVLen, 10)) {
-        $scope.viewLen++;
-      }
+      setViewLen();
 
       drawOHLCBars();
     });
@@ -65,16 +62,22 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
         $scope.minY = $scope.ohcls[i + $scope.startXIndex][3];
       }
     }
-
+    var barWid = $scope.xInterval/3;
     var x = $scope.defaultXOffset + $scope.startXIndex * $scope.xInterval;
     for (var i = 0; i < $scope.viewLen; i++) {
         var h = getY($scope.ohcls[i + $scope.startXIndex][2]),
             l = getY($scope.ohcls[i + $scope.startXIndex][3]),
             o = getY($scope.ohcls[i + $scope.startXIndex][1]),
             c = getY($scope.ohcls[i + $scope.startXIndex][4]);
-        $scope.ohcls[i + $scope.startXIndex].d = 'M' + x + ',' + h + ' L' + x + ',' + l + 
-                                                 ' M' + x + ',' + o + ' L' + (x + 4) + ',' + o +
-                                                 ' M' + (x - 4) + ',' + c + ' L' + x + ',' + c;
+        if(h === l) {
+          $scope.ohcls[i + $scope.startXIndex].d = 'M' + x + ',' + (h + 0.003) + ' L' + x + ',' + (h - 0.03) + 
+                                                   ' M' + (x - 0.003) + ',' + h + ' L' + (x + 0.003) + ',' + h;
+
+        } else {
+          $scope.ohcls[i + $scope.startXIndex].d = 'M' + x + ',' + h + ' L' + x + ',' + l + 
+                                                   ' M' + x + ',' + o + ' L' + (x + barWid) + ',' + o +
+                                                   ' M' + (x - barWid) + ',' + c + ' L' + x + ',' + c;
+        }
         x += $scope.xInterval;
     }
   }
@@ -94,41 +97,38 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http) {
     }
   }
 
-  $scope.xZoom = function(event, delta, deltaX, deltaY){
-    console.log("hello scroll");
+  // zoom
+  function setXZoom(level) {
+    $scope.xZoom = level;
+    $scope.xInterval = Math.pow(2, level);
+  }
+
+  function setViewLen() {
+      var preVLen = $scope.ohclsWidth/$scope.xInterval;
+      $scope.viewLen = Math.ceil(preVLen)
+      if (preVLen === parseInt(preVLen, 10)) {
+        $scope.viewLen++;
+      }
+
+      // TODO double check border cases
+      if ($scope.viewLen > $scope.ohcls.length) {
+        $scope.viewLen = $scope.ohcls.length;
+      }
+  }
+  $scope.xZooming = function(event, delta, deltaX, deltaY){
+    if (deltaY > 0) {
+      if (!isZooming) {
+        isZooming = true;
+        setXZoom($scope.xZoom - 1);
+        setViewLen();
+        drawOHLCBars();
+        $timeout(function() {
+          isZooming = false;
+        }, 1500);
+      }
+    }
   };
 
-        // draw Pie chart
-        var pieData = [113,100,50,28,27];
-        var sectorAngleArr = [];
-        var arcs = [];
-        var total = 0;
-        var startAngle = 0;
-        var endAngle = 0;
-        var x1,x2,y1,y2 = 0;
-        var colors = ["#468966","#FFF0A5","#FFB03B","#B64926","#8E2800"];
-
-        for(var k=0; k < pieData.length; k++){
-            total += pieData[k];
-        }
-        for(var i=0; i < pieData.length; i++){
-            var angle = Math.ceil(360 * pieData[i]/total);
-            sectorAngleArr.push(angle);
-        }
-        for(var i=0; i <sectorAngleArr.length; i++){
-            startAngle = endAngle;
-            endAngle = startAngle + sectorAngleArr[i];
-
-            x1 = parseInt(200 + 180*Math.cos(Math.PI*startAngle/180));
-            y1 = parseInt(200 + 180*Math.sin(Math.PI*startAngle/180));
-
-            x2 = parseInt(200 + 180*Math.cos(Math.PI*endAngle/180));
-            y2 = parseInt(200 + 180*Math.sin(Math.PI*endAngle/180));                
-
-            arcs.push({d:"M200,200  L" + x1 + "," + y1 + "  A180,180 0 0,1 " + x2 + "," + y2 + " z",
-                       c: colors[i]}); //1 means clockwise
-        }
-        $scope.arcs = arcs;     
 });
 
 angular.module('app').directive("xscroll", function () {
