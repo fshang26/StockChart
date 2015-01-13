@@ -1,11 +1,12 @@
-# DJI historical data source
+# Read me
+## DJI historical data source
   http://www.reakkt.com/2012/11/downloading-stooq-market-data-in-bulk.html(http://stooq.com/db/h/)
   http://www.historicaldatadirectory.com/2013/05/dow-jones-djia-historical-data-download.html (http://stooq.com/q/?s=^dji)
   https://www.quandl.com/YAHOO/INDEX_GSPC-S-P-500-Index
 
 6 ways to download free intraday and tick data for the U.S. stock marke(http://www.quantshare.com/sa-426-6-ways-to-download-free-intraday-and-tick-data-for-the-us-stock-market)
 
-# [SVG css coordinate system setup]
+## [SVG css coordinate system setup]
 
 http://monospaced.github.io/angular-mousewheel/
 
@@ -17,7 +18,7 @@ Level:   6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6 (defaul 3 or 4)
 Bar interval: power(2, level)
 Bar width: power(2, level - 2)
 
-# Draw Pie chart
+## Draw Pie chart
   (html) path.chart__pie(ng-repeat='arc in arcs' ng-attr-fill='{{arc.c}}' ng-attr-d='{{arc.d}}')
   var pieData = [113,100,50,28,27];
   var sectorAngleArr = [];
