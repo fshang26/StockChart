@@ -152,10 +152,10 @@ angular.module('app').directive('resize', function ($window) {
             return { 'h': w.height(), 'w': w.width() };
         };
         scope.$watch(scope.getWindowDimensions, function (newValue, oldValue) {
+            scope.ohclsWidth = angular.element('.chart-container').width() - scope.defaultXOffset;
             scope.containerHeight = angular.element('.chart-container').height();
             scope.setXZoom(scope.xZoom);
             scope.drawOHLCBars();
-            console.log('resize');
         }, true);
         w.bind('resize', function () {
             scope.$apply();
