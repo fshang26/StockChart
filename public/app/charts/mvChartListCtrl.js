@@ -34,10 +34,10 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
         data.unshift(d);
       });
       $scope.ohcls = data;
-      $scope.containerHeight = angular.element('.ohclbars').height();
+      $scope.containerHeight = angular.element('.chart-container').height();
       $scope.ohclsWidth = angular.element('.chart-container').width() - $scope.defaultXOffset;
-      setXZoom(3);
-      drawOHLCBars();
+      $scope.setXZoom(3);
+      $scope.drawOHLCBars();
     });
   });
     
@@ -46,10 +46,10 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
   }
 
   $scope.$watch('startXIndex', function() {
-    drawOHLCBars();
+    $scope.drawOHLCBars();
   });
 
-  function drawOHLCBars() {
+  $scope.drawOHLCBars = function() {
     $scope.minY = Number.MAX_VALUE;
     $scope.maxY = 0;
     for (var i = 0; i < $scope.viewLen; i++) {
@@ -94,7 +94,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
   }
 
   // zoom
-  function setXZoom(level) {
+  $scope.setXZoom = function(level) {
     $scope.xZoom = level;
     $scope.xInterval = Math.pow(2, level);
 
@@ -122,8 +122,8 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
       }
       if (!isZooming) {
         isZooming = true;
-        setXZoom(deltaY > 0 ? $scope.xZoom - 1 : $scope.xZoom + 1);
-        drawOHLCBars();
+        $scope.setXZoom(deltaY > 0 ? $scope.xZoom - 1 : $scope.xZoom + 1);
+        $scope.drawOHLCBars();
         $timeout(function() {
           isZooming = false;
         }, 1500); // TODO variable?
@@ -144,6 +144,24 @@ angular.module('app').directive("xscroll", function () {
         });
     };
 });
+
+angular.module('app').directive('resize', function ($window) {
+    return function (scope, element) {
+        var w = angular.element($window);
+        scope.getWindowDimensions = function () {
+            return { 'h': w.height(), 'w': w.width() };
+        };
+        scope.$watch(scope.getWindowDimensions, function (newValue, oldValue) {
+            scope.containerHeight = angular.element('.chart-container').height();
+            scope.setXZoom(scope.xZoom);
+            scope.drawOHLCBars();
+            console.log('resize');
+        }, true);
+        w.bind('resize', function () {
+            scope.$apply();
+        });
+    }
+})
 
 angular.module('app').filter('viewfilter', function() {
   return function(arr, start, end) {

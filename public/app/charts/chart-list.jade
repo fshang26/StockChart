@@ -1,5 +1,5 @@
 .container.chart-container
-  div.chart-content(xscroll msd-wheel='xZooming($event, $delta, $deltaX, $deltaY)')
+  div.chart-content(xscroll resize msd-wheel='xZooming($event, $delta, $deltaX, $deltaY)')
     svg.ohclbars
       path.ohcl(ng-repeat='ohcl in ohcls | viewfilter:startXIndex:viewLen' ng-attr-d='{{ohcl.d}}')
 div.yruler
