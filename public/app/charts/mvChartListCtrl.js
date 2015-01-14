@@ -109,6 +109,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
       $scope.viewLen = $scope.ohcls.length;
       $scope.xInterval = $scope.ohclsWidth/($scope.viewLen - 1);
     }
+    angular.element('.chart-content').width($scope.xInterval * ($scope.ohcls.length - 1) + $scope.defaultXOffset);
   }
 
   $scope.xZooming = function(event, delta, deltaX, deltaY){
@@ -117,12 +118,11 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
         return;
       }
       if (deltaY > 0 && $scope.viewLen === $scope.ohcls.length) {
-        console.log('done');
         return;
       }
       if (!isZooming) {
         isZooming = true;
-        setXZoom(deltaY > 0 ? $scope.xZoom - 1:$scope.xZoom + 1);
+        setXZoom(deltaY > 0 ? $scope.xZoom - 1 : $scope.xZoom + 1);
         drawOHLCBars();
         $timeout(function() {
           isZooming = false;
