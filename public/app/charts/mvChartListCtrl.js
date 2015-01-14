@@ -113,7 +113,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
   }
 
   $scope.xZooming = function(event, delta, deltaX, deltaY){
-    if (deltaY !== 0) {
+    if (deltaY !== 0 && deltaX === 0) {
       if (deltaY < 0 && $scope.xZoom >= 6) {
         return;
       }
@@ -136,8 +136,8 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
 angular.module('app').directive("xscroll", function () {
     return function(scope, element, attrs) {
         angular.element('.chart-container').bind("scroll", function() {
-          var index =  Math.ceil((angular.element('.ohclbars').width() - angular.element('.chart-container').width() - 30 - this.scrollLeft)/10),
-              scope = angular.element(this).scope();
+          var scope = angular.element(this).scope(),
+              index =  Math.ceil((angular.element('.chart-content').width() - angular.element('.chart-container').width() - this.scrollLeft)/scope.xInterval);
           scope.$apply(function() {
             scope.startXIndex = index < 0 ? 0: index;
           });
