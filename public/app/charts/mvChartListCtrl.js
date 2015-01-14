@@ -48,12 +48,12 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
   }
 
   $scope.$watch('startXIndex', function() {
-    $scope.minY = Number.MAX_VALUE;
-    $scope.maxY = 0;
     drawOHLCBars();
   });
 
   function drawOHLCBars() {
+    $scope.minY = Number.MAX_VALUE;
+    $scope.maxY = 0;
     for (var i = 0; i < $scope.viewLen; i++) {
       if ($scope.ohcls[i + $scope.startXIndex][2] > $scope.maxY) {
         $scope.maxY = $scope.ohcls[i + $scope.startXIndex][2];
@@ -116,15 +116,22 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
       }
   }
   $scope.xZooming = function(event, delta, deltaX, deltaY){
-    if (deltaY > 0) {
+    if (deltaY !== 0) {
+      if (deltaY < 0 && $scope.xZoom >= 6) {
+        return;
+      }
+      if (deltaY > 0 && $scope.viewLen === $scope.ohcls.length) {
+        console.log('done');
+        return;
+      }
       if (!isZooming) {
         isZooming = true;
-        setXZoom($scope.xZoom - 1);
+        setXZoom(deltaY > 0 ? $scope.xZoom - 1:$scope.xZoom + 1);
         setViewLen();
         drawOHLCBars();
         $timeout(function() {
           isZooming = false;
-        }, 1500);
+        }, 1375); // TODO variable?
       }
     }
   };

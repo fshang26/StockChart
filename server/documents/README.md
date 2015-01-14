@@ -14,9 +14,9 @@ TODO
 1. move http.get to a resource service - see angular-phonecat tutorial
 
 Horizontal zoom define
-Level:   6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6 (defaul 3 or 4)
+Level:   6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6 (defaul 3 or 4)
 Bar interval: power(2, level)
-Bar width: power(2, level - 2)
+Bar width: 1/3 interval
 
 ## [Online Markdown(readme.md) Editor]
 
@@ -48,5 +48,8 @@ Bar width: power(2, level - 2)
   }
   $scope.arcs = arcs;     
 
+## [Get Your Hands Dirty Refactoring in AngularJS]
+
 [Online Markdown(readme.md) Editor]:http://dillinger.io/
 [SVG css coordinate system setup]:http://css-tricks.com/svg-animation-on-css-transforms/
+[Get Your Hands Dirty Refactoring in AngularJS]:https://blog.safaribooksonline.com/2014/04/08/refactoring-angularjs-get-hands-filthy/
