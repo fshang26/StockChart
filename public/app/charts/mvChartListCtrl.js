@@ -7,7 +7,6 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
   $scope.ohcls = [];
   $scope.xruler = [];
 
-  setXZoom(3);
   var isZooming = false;
   var yql = 'http://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent(
             'select * from xml where url="http://chartapi.finance.yahoo.com/instrument/1.0/%5Edji/chartdata;type=quote;range=1m"') +
@@ -37,8 +36,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
       $scope.ohcls = data;
       $scope.containerHeight = angular.element('.ohclbars').height();
       $scope.ohclsWidth = angular.element('.chart-container').width() - $scope.defaultXOffset;
-      setViewLen();
-
+      setXZoom(3);
       drawOHLCBars();
     });
   });
@@ -69,15 +67,13 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
             l = getY($scope.ohcls[i + $scope.startXIndex][3]),
             o = getY($scope.ohcls[i + $scope.startXIndex][1]),
             c = getY($scope.ohcls[i + $scope.startXIndex][4]);
+            delta = 0;
         if(h === l) {
-          $scope.ohcls[i + $scope.startXIndex].d = 'M' + x + ',' + (h + 0.003) + ' L' + x + ',' + (h - 0.03) + 
-                                                   ' M' + (x - 0.003) + ',' + h + ' L' + (x + 0.003) + ',' + h;
-
-        } else {
-          $scope.ohcls[i + $scope.startXIndex].d = 'M' + x + ',' + h + ' L' + x + ',' + l + 
-                                                   ' M' + x + ',' + o + ' L' + (x + barWid) + ',' + o +
-                                                   ' M' + (x - barWid) + ',' + c + ' L' + x + ',' + c;
+          delta = barWid;
         }
+        $scope.ohcls[i + $scope.startXIndex].d = 'M' + x + ',' + (h + delta) + ' L' + x + ',' + (l - delta) + 
+                                                 ' M' + x + ',' + o + ' L' + (x + barWid) + ',' + o +
+                                                 ' M' + (x - barWid) + ',' + c + ' L' + x + ',' + c;
         x += $scope.xInterval;
     }
   }
@@ -101,20 +97,20 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
   function setXZoom(level) {
     $scope.xZoom = level;
     $scope.xInterval = Math.pow(2, level);
+
+    var preVLen = $scope.ohclsWidth/$scope.xInterval;
+    $scope.viewLen = Math.ceil(preVLen)
+    if (preVLen === parseInt(preVLen, 10)) {
+      $scope.viewLen++;
+    }
+
+    // TODO double check border cases
+    if ($scope.viewLen > $scope.ohcls.length) {
+      $scope.viewLen = $scope.ohcls.length;
+      $scope.xInterval = $scope.ohclsWidth/($scope.viewLen - 1);
+    }
   }
 
-  function setViewLen() {
-      var preVLen = $scope.ohclsWidth/$scope.xInterval;
-      $scope.viewLen = Math.ceil(preVLen)
-      if (preVLen === parseInt(preVLen, 10)) {
-        $scope.viewLen++;
-      }
-
-      // TODO double check border cases
-      if ($scope.viewLen > $scope.ohcls.length) {
-        $scope.viewLen = $scope.ohcls.length;
-      }
-  }
   $scope.xZooming = function(event, delta, deltaX, deltaY){
     if (deltaY !== 0) {
       if (deltaY < 0 && $scope.xZoom >= 6) {
@@ -127,11 +123,10 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
       if (!isZooming) {
         isZooming = true;
         setXZoom(deltaY > 0 ? $scope.xZoom - 1:$scope.xZoom + 1);
-        setViewLen();
         drawOHLCBars();
         $timeout(function() {
           isZooming = false;
-        }, 1375); // TODO variable?
+        }, 1500); // TODO variable?
       }
     }
   };
