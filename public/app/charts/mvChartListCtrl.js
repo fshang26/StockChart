@@ -67,11 +67,7 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
             l = getY($scope.ohcls[i + $scope.startXIndex][3]),
             o = getY($scope.ohcls[i + $scope.startXIndex][1]),
             c = getY($scope.ohcls[i + $scope.startXIndex][4]);
-            delta = 0;
-        if(h === l) {
-          delta = barWid;
-        }
-        $scope.ohcls[i + $scope.startXIndex].d = 'M' + x + ',' + (h + delta) + ' L' + x + ',' + (l - delta) + 
+        $scope.ohcls[i + $scope.startXIndex].d = 'M' + x + ',' + h + ' L' + x + ',' + l + 
                                                  ' M' + x + ',' + o + ' L' + (x + barWid) + ',' + o +
                                                  ' M' + (x - barWid) + ',' + c + ' L' + x + ',' + c;
         x += $scope.xInterval;
