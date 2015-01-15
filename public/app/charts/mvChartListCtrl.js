@@ -127,6 +127,11 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
     }
   };
 
+  $scope.drawCrosshair = function(event) {
+    var y = event.target.clientHeight + event.target.offsetTop - event.clientY; 
+    $scope.crosshair = 'M' + 0 + ',' + y + ' L' + ($scope.ohclsWidth + $scope.defaultXOffset) + ',' + y;
+  }
+
 });
 
 angular.module('app').directive("xscroll", function () {
