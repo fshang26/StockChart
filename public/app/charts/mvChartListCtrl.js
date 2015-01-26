@@ -61,7 +61,8 @@ angular.module('app').controller('mvChartListCtrl', function($scope, $http, $tim
       }
     }
     var barWid = $scope.xInterval/3;
-    var x = $scope.defaultXOffset + $scope.startXIndex * $scope.xInterval;
+    var elm = angular.element('.chart-content');
+    var x = elm.width() + elm.offset().left - angular.element('.chart-container').width() + $scope.defaultXOffset;
     for (var i = 0; i < $scope.viewLen; i++) {
         var h = getY($scope.ohcls[i + $scope.startXIndex][2]),
             l = getY($scope.ohcls[i + $scope.startXIndex][3]),
